@@ -27,7 +27,7 @@ import java.util.UUID;
 
 class Compression {
 
-    int getSampleSize(String filePath, int maxWidth, int maxHeight) {
+    int getSampleSize(String filePath, int maxWidth, int maxHeight) throws IOException {
        int IMAGE_MAX_SIZE = Math.max(maxWidth, maxHeight);
        BitmapFactory.Options o = new BitmapFactory.Options();
        o.inJustDecodeBounds = true;
