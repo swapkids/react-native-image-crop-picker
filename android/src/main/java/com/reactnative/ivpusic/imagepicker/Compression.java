@@ -26,8 +26,32 @@ import java.util.UUID;
 
 class Compression {
 
+    int getSampleSize(filePath, maxWidth, maxHeight) {
+        int IMAGE_MAX_SIZE = Math.max(maxWidth, maxHeight)
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+
+        FileInputStream fis = new FileInputStream(f);
+        BitmapFactory.decodeStream(fis, null, o);
+        fis.close();
+        int scale = 1;
+        if (o.outHeight > IMAGE_MAX_SIZE || o.outWidth > IMAGE_MAX_SIZE) {
+         scale = (int)Math.pow(2, (int) Math.ceil(Math.log(IMAGE_MAX_SIZE /
+            (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
+        }
+        return scale
+    }
+
+
     File resize(String originalImagePath, int maxWidth, int maxHeight, int quality) throws IOException {
-        Bitmap original = BitmapFactory.decodeFile(originalImagePath);
+        int inSampleSize = this.getSampleSize(originalImagePath, maxWidth, maxHeight)
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inDither = false;
+        options.inSampleSize = inSampleSize;
+        options.inScaled = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap original = this.decodeFile(originalImagePath, options)
 
         int width = original.getWidth();
         int height = original.getHeight();
@@ -54,7 +78,7 @@ class Compression {
 
         Bitmap resized = Bitmap.createScaledBitmap(original, finalWidth, finalHeight, true);
         resized = Bitmap.createBitmap(resized, 0, 0, finalWidth, finalHeight, rotationMatrix, true);
-        
+
         File imageDirectory = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
 
